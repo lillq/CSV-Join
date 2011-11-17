@@ -1,0 +1,8 @@
+Usage csv_join file_1_join_index file_2_join_index file_1 file_2"
+
+For the User Export:"
+  id's index is 0"
+  sourced_id's index is 17"
+
+Output: output_TIMESTAMP.csv"
+  This is the merge of the two csv files on the indexes specified."

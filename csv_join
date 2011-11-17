@@ -1,0 +1,48 @@
+#!/Users/lillq/.rvm/rubies/ruby-1.9.2-p180/bin/ruby -w
+
+require 'csv'
+
+puts ARGV
+if ARGV.size != 4
+  puts "  Incorrect number of arguments"
+  puts "  Usage csv_join file_1_join_index file_2_join_index file_1 file_2"
+  puts ""
+  puts "  For the User Export:"
+  puts "    id's index is 0"
+  puts "    sourced_id's index is 17"
+  puts ""
+  puts "  Output: output_TIMESTAMP.csv"
+  puts "    This is the merge of the two csv files on the indexes specified."
+  exit 0
+end 
+
+file1_index = ARGV[0].to_i
+file2_index = ARGV[1].to_i
+file1_text = File.read(ARGV[2])
+file2_text = File.read(ARGV[3])
+
+file1_data = CSV.parse(file1_text)
+file2_data = CSV.parse(file2_text)
+
+empty_row = Array.new(file2_data[0].size)
+
+sourced_id_to_index = {}
+(1..(file2_data.size - 1)).each do |index| 
+  sourced_id = file2_data[index][file2_index]
+  sourced_id_to_index[sourced_id] = index
+end
+
+results_csv = File.new("output_#{Time.now}.csv", "w+")
+
+results_csv.puts (file1_data[0] + file2_data[0]).to_csv
+(1..(file1_data.size - 1)).each do |index|
+  sourced_id = file1_data[index][file1_index]
+  file2_data_index = sourced_id_to_index[sourced_id]
+  if file2_data_index 
+    results_csv.puts (file1_data[index] + file2_data[file2_data_index]).to_csv
+  else 
+    results_csv.puts (file1_data[index] + empty_row).to_csv
+  end
+end
+
+results_csv.close
